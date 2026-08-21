@@ -1,0 +1,11 @@
+build/
+__pycache__/
+.unified
+*_preview.png
+HETERMINALNerdFont-*.ttf
+HE_TERMINALNerdFont-*.ttf
+HE_TERMINALNFMono-*.ttf
+HE_TERMINAL-Bold.ttf
+HE_TERMINAL-BoldItalic.ttf
+HE_TERMINAL-Italic.ttf
+tt0596m_.ttf
