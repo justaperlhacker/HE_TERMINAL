@@ -72,6 +72,7 @@ $(STAMP): $(SRC) $(wildcard scripts/*.py) | $(PATCHER)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_bold.py $(BOLD_WIDTH)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_italic.py $(SLANT)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_bolditalic.py $(SLANT)
+	cd $(WORK) && $(PY) $(CURDIR)/scripts/clear_native_pua.py
 	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \
 	    --no-progressbars tt0596m_.ttf
 	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \

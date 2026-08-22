@@ -103,6 +103,15 @@ A fresh machine just needs `make check-deps && make install`.
 | fontforge         | `fontforge`             | Nerd Fonts patcher                |
 | Python 3 + fontTools | `python-fonttools`   | outline surgery, name tables      |
 | skia-pathops      | `python-skia-pathops`   | true outline emboldening (bold)   |
+
+Note: if the system Python lacks `skia-pathops` (e.g. after an Arch
+Python bump), build under a venv instead of changing the Makefile:
+
+```sh
+python3 -m venv --system-site-packages .venv
+.venv/bin/pip install skia-pathops
+make PY=$PWD/.venv/bin/python
+```
 | ttfautohint       | `ttfautohint` / AUR     | hints for synthesized faces       |
 | git, unzip        | `git`, `unzip`          | fetching the FontPatcher          |
 | Pillow (optional) | `python-pillow`         | `make preview` renders            |
@@ -126,7 +135,9 @@ tt0596m_.ttf.orig
       ├─ make_bold.py       skia-pathops stroke union -> Bold
       │   └─ make_bolditalic.py                       -> Bold Italic
       └─ (Roman stays as-is)
-           └─ nerd-fonts FontPatcher (--complete --careful)
+           └─ clear_native_pua.py  drop the source font's own PUA icons
+                                   so FontPatcher can fill those slots
+            └─ nerd-fonts FontPatcher (--complete --careful)
                 └─ fix_nf_names.py    underscore back into family names
                       └─ unify_icons.py  identical icon outlines across styles
                            └─ make_nf_wide.py  wide icons -> 2-cell advance (NF)
@@ -149,12 +160,18 @@ Design decisions worth knowing:
   via fontconfig renders all faces from raw outlines instead.
 - **Icons at/below U+E0FF** (Powerline/Seti/misc) are designed to bleed
   edge-to-edge in one cell and are never rescaled or widened.
+- **Native PUA cleared before patching**: the source font ships 116 of
+  its own Private Use Area glyphs (U+F020–F093, Font Awesome range).
+  The Nerd Fonts patcher never overwrites an occupied codepoint, so
+  without `clear_native_pua.py` those slots would keep the original
+  font's oddly placed shapes (e.g. a folder icon hugging the right
+  cell edge), which apps like superfile render as broken or missing
+  icons. All 116 are covered by the patcher's symbol sets, so their
+  mappings are dropped pre-patch and proper NF outlines land there.
 - **Icon unification**: the patcher sizes symbols relative to each
   source font's letterforms, so bold/italic sources would get slightly
-  larger icons; `unify_icons.py` copies Regular's icon outlines into the
-  other styles so icons match pixel-for-pixel across weights. The ~116
-  PUA codepoints native to the original font are exempt (they belong to
-  the text and get emboldened/sheared with it).
+  larger icons; `unify_icons.py` copies Regular's icon outlines into
+  the other styles so icons match pixel-for-pixel across weights.
 - **Naming**: family names keep the underscore of the original
   (`HE_TERMINAL Nerd Font`); PostScript names use `HETERMINAL*`
   following Nerd Fonts conventions.
@@ -171,6 +188,7 @@ scripts/
   make_bold.py           synthetic bold via pathops stroke union
   make_italic.py         oblique via outline shear
   make_bolditalic.py     shear applied to the bold
+  clear_native_pua.py    drop source-font PUA icons colliding with NF
   fix_nf_names.py        restore HE_TERMINAL naming post-patcher
   unify_icons.py         cross-style icon consistency
   make_nf_wide.py        double-cell advances for oversized icons
