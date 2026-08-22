@@ -1,7 +1,7 @@
 # HE_TERMINAL
 
-Personal terminal font family built from `tt0596m_.ttf` with a fully
-scripted pipeline: a hand-tuned dotted zero, synthesized **Bold /
+Personal terminal font family built from `src/tt0596m_.ttf.orig` with a
+fully scripted pipeline: a hand-tuned dotted zero, synthesized **Bold /
 Italic / Bold Italic** faces, and **Nerd Fonts v3** icon patches in both
 standard (double-width) and Mono (single-width) flavors.
 
@@ -55,17 +55,18 @@ Everything is driven by the Makefile; you should never need to run the
 Python scripts by hand.
 
 ```sh
-make              # build all 11 TTFs in place (skips anything up to date)
+make              # build all 12 TTFs into fonts/
 make install      # build if needed, copy to ~/.fonts/HE_TERMINAL, fc-cache
-make preview      # render family_preview.png for a visual check
-make clean        # remove generated files (keeps tt0596m_.ttf.orig)
+make preview      # render previews/family_preview.png for a visual check
+make clean        # remove build/, fonts/, previews/ (keeps src/)
 make -n install   # dry run: print what would execute
 ```
 
-The build is incremental: each output tracks its inputs (source font,
-script, patcher), so touching one script only rebuilds the faces that
-depend on it. `make install` after a fresh clone does the right thing:
-fetches the FontPatcher into `build/`, runs the whole pipeline, installs.
+The build is incremental: the whole post-patcher pipeline tracks one
+stamp, so touching any script rebuilds the chain from staging (the
+patcher checkout in `build/` is reused). `make install` after a fresh
+clone does the right thing: fetches the FontPatcher into `build/`,
+runs the whole pipeline, installs.
 
 ### Customizing
 
@@ -88,9 +89,9 @@ Bold Italic so they always match.
 
 `.gitignore` is set up so only sources are tracked:
 
-- **keep**: all `*.py`, `Makefile`, `README.md`, `.gitignore`, and the
-  pristine `tt0596m_.ttf.orig`
-- **ignored**: every generated TTF, `build/`, previews, stamps
+- **keep**: `scripts/*.py`, `Makefile`, `README.md`, `.gitignore`, and
+  the pristine `src/tt0596m_.ttf.orig`
+- **ignored**: `fonts/`, `previews/`, `build/` (all generated)
 
 A fresh machine just needs `make check-deps && make install`.
 
@@ -110,11 +111,11 @@ A fresh machine just needs `make check-deps && make install`.
 
 | Target             | Effect                                                    |
 |--------------------|-----------------------------------------------------------|
-| `make`             | build all 11 TTFs                                         |
+| `make`             | build all 12 TTFs into `fonts/`                           |
 | `make check-deps`  | fail early if fontforge/fonttools/pathops/ttfautohint missing |
-| `make preview`     | render `family_preview.png` (all styles side by side)     |
+| `make preview`     | render `previews/family_preview.png` (all styles side by side) |
 | `make install`     | copy TTFs to `~/.fonts/HE_TERMINAL`, run `fc-cache -f`    |
-| `make clean`       | remove generated files (keeps `tt0596m_.ttf.orig`)        |
+| `make clean`       | remove `build/`, `fonts/`, `previews/`                    |
 
 ## Pipeline
 
@@ -162,17 +163,23 @@ Design decisions worth knowing:
 ## Repository layout
 
 ```
-patch_zero.py           dotted zero (run against .orig)
-make_bold.py            synthetic bold via pathops stroke union
-make_italic.py          oblique via outline shear
-make_bolditalic.py      shear applied to the bold
-fix_nf_names.py         restore HE_TERMINAL naming post-patcher
-unify_icons.py          cross-style icon consistency
-make_mono_variants.py   double-width fixes + NFMono derivation
-make_previews.py        render family_preview.png
-Makefile                orchestrates everything above (SLANT, BOLD_WIDTH knobs)
-.gitignore              generated fonts/build artifacts stay out of git
-tt0596m_.ttf.orig       pristine upstream source font -- the one precious file
+Makefile                 orchestrates everything (SLANT, BOLD_WIDTH knobs)
+src/
+  tt0596m_.ttf.orig      pristine upstream source font -- the one precious file
+scripts/
+  patch_zero.py          dotted zero (run against the .orig)
+  make_bold.py           synthetic bold via pathops stroke union
+  make_italic.py         oblique via outline shear
+  make_bolditalic.py     shear applied to the bold
+  fix_nf_names.py        restore HE_TERMINAL naming post-patcher
+  unify_icons.py         cross-style icon consistency
+  make_nf_wide.py        double-cell advances for oversized icons
+  make_mono_variants.py  NFMono derivation from the NF builds
+  make_hints.py          ttfautohint for all synthesized faces
+  make_previews.py       render previews/family_preview.png
+fonts/                   built TTFs (generated)
+previews/                rendered comparisons (generated)
+build/                   FontPatcher checkout + work staging (generated)
 ```
 
 ## Notes

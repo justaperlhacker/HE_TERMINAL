@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Add a Hack-style dotted zero to HE_TERMINAL.
 
-Usage: python3 patch_zero.py [radius]
-Reads tt0596m_.ttf.orig, writes tt0596m_.ttf.
+Usage: python3 patch_zero.py [radius] [dst]
+Reads src/tt0596m_.ttf.orig, writes tt0596m_.ttf (or [dst]).
 """
 import math
 import sys
@@ -10,8 +10,8 @@ import sys
 from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 
-SRC = "tt0596m_.ttf.orig"
-DST = "tt0596m_.ttf"
+SRC = "src/tt0596m_.ttf.orig"
+DST = sys.argv[2] if len(sys.argv) > 2 else "tt0596m_.ttf"
 
 # center of the zero's inner counter, measured from outlines
 CX, CY = 615, 694
