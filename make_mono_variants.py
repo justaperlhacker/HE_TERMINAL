@@ -2,14 +2,13 @@
 """Create NerdFontMono variants of the HE_TERMINAL Nerd Fonts.
 
 Usage: python3 make_mono_variants.py
-Also fixes the plain NF variants: icons wider than one cell get a
-double-cell advance (official NF convention) instead of overlapping.
 
 Cell = 1233 units. Icons in U+E000..U+E0FF are powerline/seti/misc,
 designed to bleed edge-to-edge in a single cell -- never touched.
-Everything else (FA, octicons, mdi, codicons, weather...) that is wider
-than a cell is either given advance 2*cell (NF) or proportionally scaled
-down and centered (Mono).
+Everything else (FA, octicons, mdi, codicons, weather...) wider than
+a cell is proportionally scaled down and centered. Reads the finished
+NF files (double-width advances applied by make_nf_wide.py) and writes
+only the Mono TTFs, so it never disturbs upstream make stamps.
 """
 import os
 
@@ -57,21 +56,6 @@ def rescale(gname, glyf, glyphSet, s, tx):
     ng.program = Program()
     ng.program.fromBytecode(b"")
     glyf[gname] = ng
-
-
-def fix_double_width(path):
-    """NF variant: oversized icons get a two-cell advance."""
-    f = TTFont(path)
-    glyf, hmtx = f["glyf"], f["hmtx"]
-    doubled = 0
-    for gname in icon_glyphs(f):
-        bb = bbox_of(gname, glyf, f.getGlyphSet())
-        if bb and (bb[2] - bb[0]) > CELL * BLEED and hmtx[gname][0] != 2 * CELL:
-            hmtx[gname] = (2 * CELL, hmtx[gname][1])
-            doubled += 1
-    if doubled:  # avoid touching mtime when already correct (make churn)
-        f.save(path)
-    return doubled
 
 
 def make_mono(src, dst):
@@ -126,10 +110,8 @@ def main() -> None:
     for style in STYLES:
         nf = f"HE_TERMINALNerdFont-{style}.ttf"
         mono = f"HE_TERMINALNFMono-{style}.ttf"
-        d = fix_double_width(nf)
         s = make_mono(nf, mono)
-        print(f"{style}: NF double-widthed {d} icons; "
-              f"{mono} scaled {s} icons")
+        print(f"{mono} scaled {s} icons")
 
 
 if __name__ == "__main__":

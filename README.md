@@ -102,6 +102,7 @@ A fresh machine just needs `make check-deps && make install`.
 | fontforge         | `fontforge`             | Nerd Fonts patcher                |
 | Python 3 + fontTools | `python-fonttools`   | outline surgery, name tables      |
 | skia-pathops      | `python-skia-pathops`   | true outline emboldening (bold)   |
+| ttfautohint       | `ttfautohint` / AUR     | hints for synthesized faces       |
 | git, unzip        | `git`, `unzip`          | fetching the FontPatcher          |
 | Pillow (optional) | `python-pillow`         | `make preview` renders            |
 
@@ -110,7 +111,7 @@ A fresh machine just needs `make check-deps && make install`.
 | Target             | Effect                                                    |
 |--------------------|-----------------------------------------------------------|
 | `make`             | build all 11 TTFs                                         |
-| `make check-deps`  | fail early if fontforge/fonttools/pathops missing         |
+| `make check-deps`  | fail early if fontforge/fonttools/pathops/ttfautohint missing |
 | `make preview`     | render `family_preview.png` (all styles side by side)     |
 | `make install`     | copy TTFs to `~/.fonts/HE_TERMINAL`, run `fc-cache -f`    |
 | `make clean`       | remove generated files (keeps `tt0596m_.ttf.orig`)        |
@@ -126,17 +127,25 @@ tt0596m_.ttf.orig
       └─ (Roman stays as-is)
            └─ nerd-fonts FontPatcher (--complete --careful)
                 └─ fix_nf_names.py    underscore back into family names
-                     └─ unify_icons.py  identical icon outlines across styles
-                          └─ make_mono_variants.py
-                               ├─ wide icons -> double-cell advance (NF)
-                               └─ wide icons -> scaled into one cell (Mono)
+                      └─ unify_icons.py  identical icon outlines across styles
+                           └─ make_nf_wide.py  wide icons -> 2-cell advance (NF)
+                                └─ make_mono_variants.py  wide icons scaled
+                                   into one cell (NerdFontMono variants)
+                                     └─ make_hints.py  ttfautohint on every
+                                        face except the hand-hinted Regulars
 ```
 
 Design decisions worth knowing:
 
 - **Stale hinting**: every outline-modifying step drops TrueType glyph
-  programs; FreeType falls back to scaled outlines (the original
-  hand-tuned hinting corrupts rasterization on modified outlines).
+  programs (the original hand-tuned hinting corrupts rasterization on
+  modified outlines). `make_hints.py` bakes fresh ttfautohint hints
+  into every non-Regular face so the family behaves like a normal
+  hinted font elsewhere. Caveat found in testing: with vertical
+  grid-fitting active, terminals can still snap diagonal glyph tops
+  (the A apex) one pixel below flat-topped letters on synthesized
+  faces; forcing `hintstyle=hintnone` for the `HE_TERMINAL*` families
+  via fontconfig renders all faces from raw outlines instead.
 - **Icons at/below U+E0FF** (Powerline/Seti/misc) are designed to bleed
   edge-to-edge in one cell and are never rescaled or widened.
 - **Icon unification**: the patcher sizes symbols relative to each
