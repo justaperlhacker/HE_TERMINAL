@@ -95,9 +95,9 @@ $(STAMP): $(SRC) $(wildcard scripts/*.py) | $(PATCHER)
 
 # ---- extras ----------------------------------------------------------------
 
-preview: previews/family_preview.png
+preview: previews/family_preview.png previews/glyphs_preview.png
 
-previews/family_preview.png: $(STAMP) scripts/make_previews.py
+previews/%.png: $(STAMP) scripts/make_previews.py
 	$(PY) scripts/make_previews.py
 
 install: all

@@ -1,7 +1,6 @@
 # build outputs
 build/
 fonts/
-previews/
 __pycache__/
 
 # safety net: nothing generated should ever live at the root
