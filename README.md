@@ -1,9 +1,9 @@
 # HE_TERMINAL
 
 Personal monospaced terminal font: dotted zero, synthesized
-**Bold / Italic / Bold Italic**, and **Nerd Fonts v3** icon patches in
-standard and Mono flavors. Built from one source TTF by a fully
-scripted pipeline.
+**Medium / Bold / Italic / Bold Italic**, and **Nerd Fonts v3** icon
+patches in standard and Mono flavors. Built from one source TTF by a
+fully scripted pipeline.
 
 ![family preview](previews/family_preview.png)
 
@@ -11,7 +11,7 @@ scripted pipeline.
 
 ```sh
 make check-deps   # verify toolchain
-make install      # build 12 TTFs -> ~/.fonts/HE_TERMINAL + fc-cache
+make install      # build 15 TTFs -> ~/.fonts/HE_TERMINAL + fc-cache
 ```
 
 Then point your terminal at one of:
@@ -37,7 +37,7 @@ make clean      # remove build/, fonts/, previews/
 Two knobs (force rebuild with `-B` after changing):
 
 ```sh
-make -B install SLANT=12 BOLD_WIDTH=120   # italic angle, bold stroke
+make -B install SLANT=12 BOLD_WIDTH=120 MEDIUM_WIDTH=60   # italic angle, stroke widths
 ```
 
 Dependencies on Arch: `make fontforge python-fonttools
@@ -52,8 +52,8 @@ make PY=$PWD/.venv/bin/python
 
 ## How it works
 
-`src/tt0596m_.ttf.orig` → dotted zero → bold/oblique synthesis →
-Nerd Fonts patcher (`--complete --careful`) → name/icon fixes →
+`src/tt0596m_.ttf.orig` → dotted zero → medium/bold/oblique
+synthesis → Nerd Fonts patcher (`--complete --careful`) → name/icon fixes →
 wide + Mono variants → ttfautohint on every synthesized face.
 
 Design notes:

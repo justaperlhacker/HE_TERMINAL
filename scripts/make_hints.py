@@ -21,7 +21,7 @@ import shutil
 import subprocess
 import tempfile
 
-STYLES = ("Bold", "Italic", "BoldItalic")
+STYLES = ("Medium", "Bold", "Italic", "BoldItalic")
 FONTS = [f"HE_TERMINAL-{s}.ttf" for s in STYLES] \
       + [f"HE_TERMINALNerdFont-{s}.ttf" for s in STYLES] \
       + [f"HE_TERMINALNFMono-{s}.ttf" for s in STYLES]

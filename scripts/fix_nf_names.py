@@ -15,6 +15,7 @@ def main() -> None:
     f = TTFont(f"HETERMINALNerdFont-{style}.ttf")
     new = {
         1: "HE_TERMINAL Nerd Font",
+        2: style,
         4: f"HE_TERMINAL Nerd Font {style}",
         6: f"HE_TERMINALNF-{style}",
     }

@@ -25,7 +25,7 @@ BLEED = 1.02          # tolerate ~25 units of edge bleed before acting
 PAD = 0.96            # mono icons are shrunk to 96% of the cell
 ICON_CP_MAX = 0xE0FF  # codepoints at/below this are cell-designed glyphs
 
-STYLES = ["Regular", "Bold", "Italic", "BoldItalic"]
+STYLES = ["Regular", "Medium", "Bold", "Italic", "BoldItalic"]
 
 
 def icon_glyphs(f):
@@ -81,6 +81,7 @@ def make_mono(src, dst):
     ps_suffix = "Mono-" + style
     new_names = {
         1: "HE_TERMINAL Nerd Font Mono",
+        2: style,
         4: f"HE_TERMINAL Nerd Font Mono {style}",
         6: "HE_TERMINALNFMono-" + style,
         16: "HE_TERMINAL Nerd Font Mono",

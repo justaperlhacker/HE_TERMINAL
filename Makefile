@@ -1,8 +1,8 @@
 # HE_TERMINAL font family build
 #
 # Builds the full matrix from one source TTF:
-#   plain            : Regular (dotted zero), Bold, Italic, Bold Italic
-#   Nerd             : same four styles + full Nerd Fonts v3 glyph sets,
+#   plain            : Regular (dotted zero), Medium, Bold, Italic, Bold Italic
+#   Nerd             : same five styles + full Nerd Fonts v3 glyph sets,
 #                      wide icons get double-cell advances
 #   NerdFontMono     : wide icons scaled into a single cell
 # Every non-Regular face is then hinted with ttfautohint so it
@@ -26,8 +26,9 @@ PY    ?= python3
 FF    ?= fontforge
 
 # customization knobs (changing them requires a rebuild, see README)
-SLANT      ?= 10    # italic slant, degrees
-BOLD_WIDTH ?= 100   # emboldening stroke, font units (2048/em)
+SLANT        ?= 10    # italic slant, degrees
+BOLD_WIDTH   ?= 100   # emboldening stroke, font units (2048/em)
+MEDIUM_WIDTH ?= 50    # Medium stroke: halves Bold's, halfway to Regular
 
 ORIG := src/tt0596m_.ttf.orig
 SRC  := fonts/tt0596m_.ttf
@@ -70,6 +71,7 @@ $(STAMP): $(SRC) $(wildcard scripts/*.py) | $(PATCHER)
 	rm -rf $(WORK) && mkdir -p $(WORK)
 	cp $(SRC) $(WORK)/
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_bold.py $(BOLD_WIDTH)
+	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_medium.py $(MEDIUM_WIDTH)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_italic.py $(SLANT)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_bolditalic.py $(SLANT)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/clear_native_pua.py
@@ -78,16 +80,19 @@ $(STAMP): $(SRC) $(wildcard scripts/*.py) | $(PATCHER)
 	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \
 	    --no-progressbars HE_TERMINAL-Bold.ttf
 	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \
+	    --no-progressbars HE_TERMINAL-Medium.ttf
+	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \
 	    --no-progressbars HE_TERMINAL-Italic.ttf
 	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \
 	    --no-progressbars HE_TERMINAL-BoldItalic.ttf
-	cd $(WORK) && for s in Regular Bold Italic BoldItalic; do \
+	cd $(WORK) && for s in Regular Medium Bold Italic BoldItalic; do \
 	    $(PY) $(CURDIR)/scripts/fix_nf_names.py $$s; done
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/unify_icons.py
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_nf_wide.py
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_mono_variants.py
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_hints.py
-	cp $(WORK)/HE_TERMINAL-Bold.ttf $(WORK)/HE_TERMINAL-Italic.ttf \
+	cp $(WORK)/HE_TERMINAL-Bold.ttf $(WORK)/HE_TERMINAL-Medium.ttf \
+	   $(WORK)/HE_TERMINAL-Italic.ttf \
 	   $(WORK)/HE_TERMINAL-BoldItalic.ttf \
 	   $(WORK)/HE_TERMINALNerdFont-*.ttf \
 	   $(WORK)/HE_TERMINALNFMono-*.ttf fonts/

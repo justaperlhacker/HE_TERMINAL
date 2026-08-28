@@ -70,6 +70,7 @@ def render(rows: list[tuple[str, str, str, str]], out_path: str,
 def main() -> None:
     family_rows = [
         (PLAIN, "Regular", PLAIN_TEXT, FG),
+        ("fonts/HE_TERMINAL-Medium.ttf", "Medium", PLAIN_TEXT, GREEN),
         ("fonts/HE_TERMINAL-Bold.ttf", "Bold", PLAIN_TEXT, ORANGE),
         ("fonts/HE_TERMINAL-Italic.ttf", "Italic", PLAIN_TEXT, CYAN),
         ("fonts/HE_TERMINAL-BoldItalic.ttf", "BoldItal", PLAIN_TEXT, PURPLE),
