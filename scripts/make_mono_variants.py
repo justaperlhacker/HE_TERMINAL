@@ -25,7 +25,7 @@ BLEED = 1.02          # tolerate ~25 units of edge bleed before acting
 PAD = 0.96            # mono icons are shrunk to 96% of the cell
 ICON_CP_MAX = 0xE0FF  # codepoints at/below this are cell-designed glyphs
 
-STYLES = ["Regular", "Medium", "Bold", "Italic", "BoldItalic"]
+STYLES = ["Regular", "Medium", "Bold", "Italic", "BoldItalic", "MediumItalic"]
 
 
 def icon_glyphs(f):

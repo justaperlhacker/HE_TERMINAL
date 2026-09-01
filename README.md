@@ -1,9 +1,9 @@
 # HE_TERMINAL
 
 Personal monospaced terminal font: dotted zero, synthesized
-**Medium / Bold / Italic / Bold Italic**, and **Nerd Fonts v3** icon
-patches in standard and Mono flavors. Built from one source TTF by a
-fully scripted pipeline.
+**Medium / Medium Italic / Bold / Italic / Bold Italic**, and
+**Nerd Fonts v3** icon patches in standard and Mono flavors. Built
+from one source TTF by a fully scripted pipeline.
 
 ![family preview](previews/family_preview.png)
 
@@ -11,7 +11,7 @@ fully scripted pipeline.
 
 ```sh
 make check-deps   # verify toolchain
-make install      # build 15 TTFs -> ~/.fonts/HE_TERMINAL + fc-cache
+make install      # build 18 TTFs -> ~/.fonts/HE_TERMINAL + fc-cache
 ```
 
 Then point your terminal at one of:

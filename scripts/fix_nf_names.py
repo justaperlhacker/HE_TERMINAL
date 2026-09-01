@@ -19,9 +19,11 @@ def main() -> None:
         4: f"HE_TERMINAL Nerd Font {style}",
         6: f"HE_TERMINALNF-{style}",
     }
-    for rec in f["name"].names:
-        if rec.nameID in new:
-            rec.string = new[rec.nameID]
+    keep = [rec for rec in f["name"].names if rec.nameID in new]
+    for rec in keep:
+        rec.string = new[rec.nameID]
+    f["name"].names = keep
+    f["name"].names.sort(key=lambda r: (r.platformID, r.platEncID, r.langID, r.nameID))
     f.save(f"HE_TERMINALNerdFont-{style}.ttf")
     print(f"named HE_TERMINALNerdFont-{style}.ttf")
 
