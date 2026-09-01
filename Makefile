@@ -52,9 +52,10 @@ check-deps:
 
 # ---- patched master --------------------------------------------------------
 
-$(SRC): $(ORIG) scripts/patch_zero.py
+$(SRC): $(ORIG) scripts/patch_zero.py scripts/patch_arrows.py
 	@mkdir -p fonts
 	$(PY) scripts/patch_zero.py 215 $@
+	$(PY) scripts/patch_arrows.py $@
 
 # ---- nerd font pipeline ----------------------------------------------------
 #

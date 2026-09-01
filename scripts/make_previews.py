@@ -17,7 +17,7 @@ PLAIN = "fonts/tt0596m_.ttf"
 NF = "fonts/HE_TERMINALNerdFont-Regular.ttf"
 NFMONO = "fonts/HE_TERMINALNFMono-Regular.ttf"
 
-PLAIN_TEXT = "ABCDEFabcdef 0123456789 {}[]()<>~^%"
+PLAIN_TEXT = "ABCDEFabcdef 0123456789 {}[]()<>~^% -> <-"
 ICON_TEXT = "\ue0b6 \ue0b0 main \ue0a2 2 \uf07b code \uf121 0Oo"
 
 GLYPH_SETS = [
@@ -25,6 +25,7 @@ GLYPH_SETS = [
     ("lower ", "abcdefghijklmnopqrstuvwxyz"),
     ("digit ", "0123456789 |1lI 0Oo"),
     ("punct ", "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"),
+    ("arrows ", "-> <- <-> --> <= >= => + - = a-b"),
     ("lines ", "─│┌┐└┘├┤┬┴┼═║╔╗╚╝╠╣╦╩╬←↑→↓▲▼"),
 ]
 
@@ -52,9 +53,13 @@ def render(rows: list[tuple[str, str, str, str]], out_path: str,
     fonts = [(ImageFont.truetype(p, size), lbl, txt, col)
              for p, lbl, txt, col in rows]
     probe = ImageDraw.Draw(Image.new("RGB", (8, 8)))
-    gap = int(probe.textlength("MM", font=fonts[0][0]))
-    width = max(int(probe.textlength(lbl + txt, font=f))
-                for f, lbl, txt, _ in fonts) + gap + 2 * pad_x
+    cell = int(probe.textlength("M", font=fonts[0][0]))
+    # label column = widest label + one blank cell, so sample text
+    # can never run into the category word
+    gap = max(int(probe.textlength(lbl, font=f))
+              for f, lbl, _txt, _col in fonts) + cell
+    width = max(int(probe.textlength(txt, font=f))
+                for f, _lbl, txt, _col in fonts) + gap + 2 * pad_x
     img = Image.new("RGB", (width, len(fonts) * line_h + 2 * pad_y), BG)
     draw = ImageDraw.Draw(img)
     y = pad_y

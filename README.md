@@ -1,6 +1,7 @@
 # HE_TERMINAL
 
-Personal monospaced terminal font: dotted zero, synthesized
+Personal monospaced terminal font: dotted zero, arrow-aligned
+dash, synthesized
 **Medium / Medium Italic / Bold / Italic / Bold Italic**, and
 **Nerd Fonts v3** icon patches in standard and Mono flavors. Built
 from one source TTF by a fully scripted pipeline.
@@ -52,14 +53,18 @@ make PY=$PWD/.venv/bin/python
 
 ## How it works
 
-`src/tt0596m_.ttf.orig` → dotted zero → medium/bold/oblique
-synthesis → Nerd Fonts patcher (`--complete --careful`) → name/icon fixes →
-wide + Mono variants → ttfautohint on every synthesized face.
+`src/tt0596m_.ttf.orig` → dotted zero + dash alignment →
+medium/bold/oblique synthesis → Nerd Fonts patcher (`--complete
+--careful`) → name/icon fixes → wide + Mono variants → ttfautohint
+on every synthesized face.
 
 Design notes:
 
 - Strictly monospaced cells everywhere, dotted zero in every face,
   no ligatures.
+- Hyphen-minus is lifted onto the operator centerline (`= + < >`),
+  so typed arrows `->` `<-` and comparisons `<=` `>=` line up in
+  every face.
 - The source font's own PUA icons are cleared pre-patch so proper
   Nerd Fonts outlines land there; icon outlines are unified across
   weights so they match pixel-for-pixel.
