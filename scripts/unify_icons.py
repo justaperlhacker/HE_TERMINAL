@@ -17,12 +17,14 @@ from fontTools.ttLib.tables.ttProgram import Program
 from make_mono_variants import ICON_CP_MAX, icon_glyphs
 
 MASTER = "HE_TERMINALNerdFont-Regular.ttf"
-OTHERS = [f"HE_TERMINALNerdFont-{s}.ttf" for s in ("Medium", "Bold", "Italic", "BoldItalic", "MediumItalic")]
+OTHERS = [f"HE_TERMINALNerdFont-{s}.ttf" for s in
+          ("Roman", "Medium", "Bold", "RomanItalic", "Italic",
+           "BoldItalic", "MediumItalic")]
 
 
 def main() -> None:
     src = TTFont(MASTER)
-    native_cps = {cp for cp in TTFont("tt0596m_.ttf").getBestCmap()
+    native_cps = {cp for cp in TTFont("HE_TERMINAL-Roman.ttf").getBestCmap()
                   if cp > ICON_CP_MAX}
     shared = set(icon_glyphs(src).values()) - native_cps
     print(f"master icons: {len(icon_glyphs(src))}, "

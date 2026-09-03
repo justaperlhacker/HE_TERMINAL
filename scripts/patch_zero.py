@@ -62,6 +62,24 @@ def main() -> None:
     mp.maxPoints, mp.maxContours = pts, ctrs
     mp.maxCompositePoints, mp.maxCompositeContours = max(cpts, pts), max(cctrs, ctrs)
 
+    name_tbl = f["name"]
+    for rec in name_tbl.names:
+        if rec.nameID == 2:
+            rec.string = "Roman"
+        elif rec.nameID == 4:
+            rec.string = "HE_TERMINAL Roman"
+        elif rec.nameID == 6:
+            rec.string = "HE_TERMINAL-Roman"
+        elif rec.nameID == 16:
+            rec.string = "HE_TERMINAL"
+        elif rec.nameID == 17:
+            rec.string = "Roman"
+
+    os2 = f["OS/2"]
+    os2.usWeightClass = 300
+    os2.fsSelection = os2.fsSelection & ~0x40  # REGULAR off
+    f["head"].macStyle &= ~0x0001
+
     f.save(DST)
     print(f"wrote {DST} with dot radius {radius} "
           f"(~{2 * radius * 12 / 2048:.1f}px at 12pt)")

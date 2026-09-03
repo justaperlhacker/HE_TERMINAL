@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Bake ttfautohint hints into every non-Regular face.
+"""Bake ttfautohint hints into every synthesized face.
 
-The Regular face (and the Nerd variants derived from it) keeps the
-hand-tuned hinting of tt0596m_.ttf. All synthesized faces had their
-per-glyph programs stripped during emboldening/shearing, but the
-font-wide fpgm/prep/cvt tables still ride along from the source --
+The Roman face (and the plain Roman Italic) keeps the hand-tuned
+hinting of HE_TERMINAL-Roman.ttf. All other synthesized faces had
+their per-glyph programs stripped during emboldening/shearing, but
+the font-wide fpgm/prep/cvt tables still ride along from the source --
 tuned to the ORIGINAL outlines they grid-fit the modified ones
 differently at raster time (the "small bold A" effect). ttfautohint
 replaces those tables wholesale and generates fresh ones matched to
 the actual outlines of each face.
 
-Always processes all nine files; incremental builds are gated by the
+Always processes all faces; incremental builds are gated by the
 Makefile's .hinted stamp, not by inspecting the TTFs. PUA icon glyphs
 are left untouched (no --symbol), and --increase-x-height=0 stops
 ttfautohint from nudging x-heights at small sizes so letterforms stay
@@ -21,10 +21,12 @@ import shutil
 import subprocess
 import tempfile
 
-STYLES = ("Medium", "Bold", "Italic", "BoldItalic", "MediumItalic")
-FONTS = [f"HE_TERMINAL-{s}.ttf" for s in STYLES] \
-      + [f"HE_TERMINALNerdFont-{s}.ttf" for s in STYLES] \
-      + [f"HE_TERMINALNFMono-{s}.ttf" for s in STYLES]
+SYNTHESIZED_STYLES = ("Regular", "Medium", "Bold", "RomanItalic", "Italic", "BoldItalic", "MediumItalic")
+NERD_STYLES = ("Roman", "Regular", "Medium", "Bold", "RomanItalic", "Italic", "BoldItalic", "MediumItalic")
+
+FONTS = [f"HE_TERMINAL-{s}.ttf" for s in SYNTHESIZED_STYLES] \
+      + [f"HE_TERMINALNerdFont-{s}.ttf" for s in NERD_STYLES] \
+      + [f"HE_TERMINALNFMono-{s}.ttf" for s in NERD_STYLES]
 
 
 def hint(path: str) -> None:

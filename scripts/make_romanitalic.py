@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Create an oblique Italic companion for HE_TERMINAL.
+"""Create a Roman Italic companion for HE_TERMINAL.
 
-Usage: python3 make_italic.py [slant_degrees]
-Reads HE_TERMINAL-Regular.ttf (dotted zero included), writes HE_TERMINAL-Italic.ttf.
+Usage: python3 make_romanitalic.py [slant_degrees]
+Reads HE_TERMINAL-Roman.ttf, writes HE_TERMINAL-RomanItalic.ttf.
+Same shear as make_italic.py so every oblique face leans identically.
 """
 import math
 import sys
@@ -14,8 +15,8 @@ from fontTools.pens.transformPen import TransformPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib.tables.ttProgram import Program
 
-SRC = "HE_TERMINAL-Regular.ttf"
-DST = "HE_TERMINAL-Italic.ttf"
+SRC = "HE_TERMINAL-Roman.ttf"
+DST = "HE_TERMINAL-RomanItalic.ttf"
 
 angle = float(sys.argv[1]) if len(sys.argv) > 1 else 10.0
 k = math.tan(math.radians(angle))
@@ -25,9 +26,6 @@ def main() -> None:
     f = TTFont(SRC)
     glyf = f["glyf"]
 
-    # x' = x + k*y: top leans right, baseline pinned at y=0.
-    # Composites are decomposed so every outline passes through the same
-    # shear; TrueType quadratics survive affine maps unchanged.
     shear = Transform(1, 0, k, 1, 0, 0)
     glyphSet = f.getGlyphSet()
     for name in list(glyf.keys()):
@@ -36,9 +34,6 @@ def main() -> None:
         pen = TTGlyphPen(None)
         rec.replay(TransformPen(pen, shear))
         ng = pen.glyph()
-        # The hand-tuned TT hinting assumes unsheared outlines and would
-        # corrupt rasterization; drop it -- FreeType falls back to scaled
-        # outlines, same as the dotted zero already does.
         ng.program = Program()
         ng.program.fromBytecode(b"")
         glyf[name] = ng
@@ -54,25 +49,26 @@ def main() -> None:
     mp.maxPoints, mp.maxContours = pts, ctrs
     mp.maxCompositePoints, mp.maxCompositeContours = pts, ctrs
 
-    name = f["name"]
-    for rec in name.names:
+    name_tbl = f["name"]
+    for rec in name_tbl.names:
         if rec.nameID == 2:
-            rec.string = "Italic"
+            rec.string = "Roman Italic"
         elif rec.nameID == 4:
-            rec.string = "HE_TERMINAL Italic"
+            rec.string = "HE_TERMINAL Roman Italic"
         elif rec.nameID == 6:
-            rec.string = "HE_TERMINAL-Italic"
+            rec.string = "HE_TERMINAL-RomanItalic"
         elif rec.nameID == 16:
             rec.string = "HE_TERMINAL"
         elif rec.nameID == 17:
-            rec.string = "Italic"
+            rec.string = "Roman Italic"
 
     os2 = f["OS/2"]
-    os2.fsSelection = (os2.fsSelection & ~0x40) | 0x01  # REGULAR off, ITALIC on
+    os2.usWeightClass = 300
+    os2.fsSelection = (os2.fsSelection & ~(0x40 | 0x20)) | 0x01  # ITALIC on, REGULAR/BOLD off
     f["head"].macStyle |= 0x0002
 
     f.save(DST)
-    print(f"wrote {DST} ({angle:.1f} deg slant)")
+    print(f"wrote {DST} ({angle:.1f} deg slant on roman)")
 
 
 if __name__ == "__main__":

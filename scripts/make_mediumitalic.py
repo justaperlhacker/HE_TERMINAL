@@ -59,6 +59,10 @@ def main() -> None:
             rec.string = "HE_TERMINAL Medium Italic"
         elif rec.nameID == 6:
             rec.string = "HE_TERMINAL-MediumItalic"
+        elif rec.nameID == 16:
+            rec.string = "HE_TERMINAL"
+        elif rec.nameID == 17:
+            rec.string = "Medium Italic"
 
     os2 = f["OS/2"]
     os2.usWeightClass = 500

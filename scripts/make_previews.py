@@ -13,7 +13,7 @@ CYAN = (125, 207, 255)
 PURPLE = (187, 154, 247)
 GREEN = (158, 206, 106)
 
-PLAIN = "fonts/tt0596m_.ttf"
+PLAIN = "fonts/HE_TERMINAL-Roman.ttf"
 NF = "fonts/HE_TERMINALNerdFont-Regular.ttf"
 NFMONO = "fonts/HE_TERMINALNFMono-Regular.ttf"
 
@@ -74,7 +74,8 @@ def render(rows: list[tuple[str, str, str, str]], out_path: str,
 
 def main() -> None:
     family_rows = [
-        (PLAIN, "Regular", PLAIN_TEXT, FG),
+        (PLAIN, "Roman", PLAIN_TEXT, FG),
+        ("fonts/HE_TERMINAL-Regular.ttf", "Regular", PLAIN_TEXT, FG),
         ("fonts/HE_TERMINAL-Medium.ttf", "Medium", PLAIN_TEXT, GREEN),
         ("fonts/HE_TERMINAL-MediumItalic.ttf", "Med Ital", PLAIN_TEXT, CYAN),
         ("fonts/HE_TERMINAL-Bold.ttf", "Bold", PLAIN_TEXT, ORANGE),

@@ -2,7 +2,7 @@
 """Create a synthetic Bold companion for HE_TERMINAL.
 
 Usage: python3 make_bold.py [added_stroke_width]
-Reads tt0596m_.ttf (dotted zero included), writes HE_TERMINAL-Bold.ttf.
+Reads HE_TERMINAL-Regular.ttf (dotted zero included), writes HE_TERMINAL-Bold.ttf.
 
 Emboldening = union of the original fill and a round-joined stroke band,
 i.e. a Minkowski dilation of every outline; counters shrink, advance
@@ -15,7 +15,7 @@ from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.ttProgram import Program
 
-SRC = "tt0596m_.ttf"
+SRC = "HE_TERMINAL-Regular.ttf"
 DST = "HE_TERMINAL-Bold.ttf"
 
 width = float(sys.argv[1]) if len(sys.argv) > 1 else 100.0
@@ -86,6 +86,10 @@ def main() -> None:
             rec.string = "HE_TERMINAL Bold"
         elif rec.nameID == 6:
             rec.string = "HE_TERMINAL-Bold"
+        elif rec.nameID == 16:
+            rec.string = "HE_TERMINAL"
+        elif rec.nameID == 17:
+            rec.string = "Bold"
 
     os2 = f["OS/2"]
     os2.usWeightClass = 700

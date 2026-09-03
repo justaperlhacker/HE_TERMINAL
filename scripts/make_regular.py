@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Create a synthetic Medium companion for HE_TERMINAL.
+"""Create a synthetic Regular companion for HE_TERMINAL.
 
-Usage: python3 make_medium.py [added_stroke_width]
-Reads HE_TERMINAL-Roman.ttf (dotted zero included), writes HE_TERMINAL-Medium.ttf.
+Usage: python3 make_regular.py [added_stroke_width]
+Reads HE_TERMINAL-Roman.ttf (dotted zero included), writes HE_TERMINAL-Regular.ttf.
 
 Same Minkowski-dilation emboldening as make_bold.py, just lighter: the
-default stroke sits halfway between Roman (~0) and Bold (100, the
-BOLD_WIDTH knob), landing in the 500 weight class.
+default stroke sits halfway between Roman (~0) and Medium (50),
+landing in the 400 weight class.
 """
 import sys
 
@@ -16,9 +16,9 @@ from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.ttProgram import Program
 
 SRC = "HE_TERMINAL-Roman.ttf"
-DST = "HE_TERMINAL-Medium.ttf"
+DST = "HE_TERMINAL-Regular.ttf"
 
-width = float(sys.argv[1]) if len(sys.argv) > 1 else 50.0
+width = float(sys.argv[1]) if len(sys.argv) > 1 else 25.0
 
 
 def embolden(glyph_name: str, glyph, glyphSet):
@@ -48,14 +48,14 @@ def main() -> None:
     failed = []
     for name in list(glyf.keys()):
         try:
-            med_path = embolden(name, glyf[name], glyphSet)
+            reg_path = embolden(name, glyf[name], glyphSet)
         except pathops.PathOpsError:
             failed.append(name)
             continue
-        if med_path is None:
+        if reg_path is None:
             continue
         pen = TTGlyphPen(None)
-        med_path.draw(pen)
+        reg_path.draw(pen)
         ng = pen.glyph()
         ng.program = Program()
         ng.program.fromBytecode(b"")
@@ -75,19 +75,19 @@ def main() -> None:
     name_tbl = f["name"]
     for rec in name_tbl.names:
         if rec.nameID == 2:
-            rec.string = "Medium"
+            rec.string = "Regular"
         elif rec.nameID == 4:
-            rec.string = "HE_TERMINAL Medium"
+            rec.string = "HE_TERMINAL Regular"
         elif rec.nameID == 6:
-            rec.string = "HE_TERMINAL-Medium"
+            rec.string = "HE_TERMINAL-Regular"
         elif rec.nameID == 16:
             rec.string = "HE_TERMINAL"
         elif rec.nameID == 17:
-            rec.string = "Medium"
+            rec.string = "Regular"
 
     os2 = f["OS/2"]
-    os2.usWeightClass = 500
-    os2.fsSelection = os2.fsSelection & ~(0x40 | 0x20)  # neither REGULAR nor BOLD
+    os2.usWeightClass = 400
+    os2.fsSelection = (os2.fsSelection & ~(0x40 | 0x20)) | 0x40  # REGULAR on, BOLD off
     f["head"].macStyle &= ~0x0001
 
     f.save(DST)
