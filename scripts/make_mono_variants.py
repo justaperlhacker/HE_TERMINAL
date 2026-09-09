@@ -24,6 +24,11 @@ CELL = 1233
 BLEED = 1.02          # tolerate ~25 units of edge bleed before acting
 PAD = 0.96            # mono icons are shrunk to 96% of the cell
 ICON_CP_MAX = 0xE0FF  # codepoints at/below this are cell-designed glyphs
+# The Nerd patcher also drops IEC power symbols below that line
+# (U+23FB power, U+23FC on-off, U+23FD on, U+23FE sleep); they are
+# full-size symbols, not bleed-designed cell art, so treat them as
+# icons wherever icon_glyphs() is used (unify, double-width, mono).
+EXTRA_ICON_CPS = frozenset((0x23FB, 0x23FC, 0x23FD, 0x23FE))
 
 STYLES = ["Roman", "Regular", "Medium", "Bold", "RomanItalic", "Italic", "BoldItalic", "MediumItalic"]
 
@@ -43,7 +48,7 @@ def icon_glyphs(f):
     """Map glyph name -> codepoint for scalable icon glyphs."""
     rev = {}
     for cp, gname in f.getBestCmap().items():
-        if cp > ICON_CP_MAX:
+        if cp > ICON_CP_MAX or cp in EXTRA_ICON_CPS:
             rev[gname] = cp
     return rev
 
@@ -58,7 +63,7 @@ def bbox_of(gname, glyf, glyphSet):
     return bp.bounds
 
 
-def rescale(gname, glyf, glyphSet, s, tx):
+def rescale(gname, glyf, hmtx, glyphSet, s, tx):
     rec = DecomposingRecordingPen(glyphSet)
     glyphSet[gname].draw(rec)
     pen = TTGlyphPen(None)
@@ -67,6 +72,10 @@ def rescale(gname, glyf, glyphSet, s, tx):
     ng.program = Program()
     ng.program.fromBytecode(b"")
     glyf[gname] = ng
+    # Outlines moved: refresh the bearing so no stale lsb shifts a
+    # later glyphSet draw (same invariant as the synthesis scripts).
+    ng.recalcBounds(glyf)
+    hmtx[gname] = (hmtx[gname][0], ng.xMin)
 
 
 def make_mono(src, dst):
@@ -84,7 +93,7 @@ def make_mono(src, dst):
             continue
         s = CELL * PAD / w
         tx = CELL / 2 - s * (bb[0] + bb[2]) / 2
-        rescale(gname, glyf, glyphSet, s, tx)
+        rescale(gname, glyf, hmtx, glyphSet, s, tx)
         hmtx[gname] = (CELL, hmtx[gname][1])
         scaled += 1
 

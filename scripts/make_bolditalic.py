@@ -40,6 +40,7 @@ def main() -> None:
         glyf[name] = ng
 
     mp = f["maxp"]
+    hmtx = f["hmtx"]
     pts = ctrs = 0
     for gname in glyf.keys():
         gg = glyf[gname]
@@ -47,6 +48,13 @@ def main() -> None:
             coords, ends, _flags = gg.getCoordinates(glyf)
             pts = max(pts, len(coords))
             ctrs = max(ctrs, len(ends))
+            if coords:
+                # Outlines moved but hmtx still holds the source
+                # bearings; a stale lsb shifts the next script's
+                # glyphSet draws (offset by lsb - xMin), compounding
+                # at every stage -- refresh it while we are here.
+                gg.recalcBounds(glyf)
+                hmtx[gname] = (hmtx[gname][0], gg.xMin)
     mp.maxPoints, mp.maxContours = pts, ctrs
     mp.maxCompositePoints, mp.maxCompositeContours = pts, ctrs
 

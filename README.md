@@ -53,8 +53,8 @@ make PY=$PWD/.venv/bin/python
 
 ## How it works
 
-`src/tt0596m_.ttf.orig` → dotted zero + dash alignment →
-medium/bold/oblique synthesis → Nerd Fonts patcher (`--complete
+`src/tt0596m_.ttf.orig` → dotted zero + dash alignment + apex-cap
+seating → medium/bold/oblique synthesis → Nerd Fonts patcher (`--complete
 --careful`) → name/icon fixes → wide + Mono variants → ttfautohint
 on every synthesized face.
 
@@ -65,6 +65,14 @@ Design notes:
 - Hyphen-minus is lifted onto the operator centerline (`= + < >`),
   so typed arrows `->` `<-` and comparisons `<=` `>=` line up in
   every face.
+- The flat tops of `A V W X Y` sit exactly on the flat cap line
+  (the source draws them 2 units above it, which let hinters snap
+  the apex a pixel below flat-topped letters in kitty).
+- Every text glyph's ink is fitted inside the monospace advance
+  (kitty downscales glyphs whose bitmap exceeds the cell: the old
+  over-wide `A`/`W` rendered ~15% small in bold listings). Side
+  bearings are refreshed after every synthesis step, so no stale
+  `hmtx` can shift a later outline operation.
 - The source font's own PUA icons are cleared pre-patch so proper
   Nerd Fonts outlines land there; icon outlines are unified across
   weights so they match pixel-for-pixel.
