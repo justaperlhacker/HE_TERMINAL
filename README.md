@@ -54,7 +54,7 @@ make PY=$PWD/.venv/bin/python
 ## How it works
 
 `src/tt0596m_.ttf.orig` → dotted zero + dash alignment + apex-cap
-seating → medium/bold/oblique synthesis → Nerd Fonts patcher (`--complete
+seating + tilde-wave deepening → medium/bold/oblique synthesis → Nerd Fonts patcher (`--complete
 --careful`) → name/icon fixes → wide + Mono variants → ttfautohint
 on every synthesized face.
 
@@ -68,6 +68,15 @@ Design notes:
 - The flat tops of `A V W X Y` sit exactly on the flat cap line
   (the source draws them 2 units above it, which let hinters snap
   the apex a pixel below flat-topped letters in kitty).
+- The tilde wave is deepened (86 → 156 units peak-to-trough) so it
+  survives synthetic emboldening: dilation adds stem thickness while
+  the sub-pixel wiggle stays fixed, which flattened `~` into a dash
+  at Regular and heavier in every variant.
+- The dot gaps of `!` `?` `¿` are re-cut after synthesis: dilation
+  shrinks the bar-to-dot white gap by the full stroke width each
+  step (Roman 119 → Bold fused solid), so heavier faces get the gap
+  carved back open (120 units Regular, 160 where the outline gap
+  went sub-pixel: Medium and Bold).
 - Every text glyph's ink is fitted inside the monospace advance
   (kitty downscales glyphs whose bitmap exceeds the cell: the old
   over-wide `A`/`W` rendered ~15% small in bold listings). Side

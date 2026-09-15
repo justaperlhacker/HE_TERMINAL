@@ -59,11 +59,12 @@ check-deps:
 
 # ---- patched master --------------------------------------------------------
 
-$(SRC): $(ORIG) scripts/patch_zero.py scripts/patch_arrows.py scripts/patch_apex.py
+$(SRC): $(ORIG) scripts/patch_zero.py scripts/patch_arrows.py scripts/patch_apex.py scripts/patch_tilde.py
 	@mkdir -p fonts
 	$(PY) scripts/patch_zero.py 215 $@
 	$(PY) scripts/patch_arrows.py $@
 	$(PY) scripts/patch_apex.py $@
+	$(PY) scripts/patch_tilde.py $@
 
 # ---- nerd font pipeline ----------------------------------------------------
 #
@@ -88,6 +89,7 @@ $(STAMP): $(SRC) $(wildcard scripts/*.py) | $(PATCHER)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_bolditalic.py $(SLANT)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/make_mediumitalic.py $(SLANT)
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/fit_cell.py
+	cd $(WORK) && $(PY) $(CURDIR)/scripts/fix_gaps.py
 	cd $(WORK) && $(PY) $(CURDIR)/scripts/clear_native_pua.py
 	# Patch Roman first; patcher normalizes style → Regular in output filename
 	cd $(WORK) && $(FF) -script $(PATCHERABS) --complete --careful \
